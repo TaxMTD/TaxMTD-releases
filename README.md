@@ -17,7 +17,6 @@
     <a href="https://github.com/TaxMTD/TaxMTD-releases/releases/latest">
       <img alt="Downloads" src="https://img.shields.io/github/downloads/TaxMTD/TaxMTD-releases/total?color=22c55e&label=downloads" />
     </a>
-    <img alt="Signed" src="https://img.shields.io/badge/signed-Apple%20Developer%20ID%20%2B%20Azure%20Code%20Signing-22c55e" />
     <img alt="HMRC" src="https://img.shields.io/badge/HMRC-recognised-22c55e" />
   </p>
 
@@ -42,10 +41,10 @@
 
 | Platform                  | Download                                                                                          | Notes                                              |
 | ------------------------- | ------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
-| 🍎 **macOS** Apple Silicon | [Latest .dmg](https://github.com/TaxMTD/TaxMTD-releases/releases/latest)                          | M1 / M2 / M3 / M4 / M5. Signed with Apple Developer ID + notarised. |
+| 🍎 **macOS** Apple Silicon | [Latest .dmg](https://github.com/TaxMTD/TaxMTD-releases/releases/latest)                          | M1 / M2 / M3 / M4 / M5.                            |
 | 🍎 **macOS** Intel        | [Latest .dmg](https://github.com/TaxMTD/TaxMTD-releases/releases/latest)                          | Pre-2020 Macs. Same features as Apple Silicon.     |
-| 🪟 **Windows** 10 / 11    | [Latest .msi](https://github.com/TaxMTD/TaxMTD-releases/releases/latest)                          | Branded MSI, en-GB locale, Azure-signed. Recommended. |
-| 🪟 **Windows** 10 / 11    | [Latest .exe (NSIS)](https://github.com/TaxMTD/TaxMTD-releases/releases/latest)                   | Single-file installer for users who prefer .exe.   |
+| 🪟 **Windows** 10 / 11    | [Latest .msi](https://github.com/TaxMTD/TaxMTD-releases/releases/latest)                          | Recommended. en-GB locale.                          |
+| 🪟 **Windows** 10 / 11    | [Latest .exe](https://github.com/TaxMTD/TaxMTD-releases/releases/latest)                          | Single-file installer.                              |
 | 📱 **iOS / iPadOS**       | [Notify me](https://taxmtd.uk/contact?topic=ios-launch)                                            | Coming soon to the App Store.                       |
 | 🤖 **Android**            | [Notify me](https://taxmtd.uk/contact?topic=android-launch)                                        | Coming soon to Google Play.                         |
 | 🐧 **Linux**              | [Open the web app](https://taxmtd.uk)                                                              | All TaxMTD features work fully in the browser too. |
@@ -54,80 +53,44 @@
 
 ---
 
-## What ships in every release
+## Auto-updates, built in
 
-Each version tag (e.g. `v1.0.1`) attaches the following assets:
+Once installed, **TaxMTD updates itself**. On every launch the app checks whether a newer version is available. If yes, you see the release's changelog inline and a single **Install & restart** button — that's the whole update flow.
 
-```
-TaxMTD_<v>_aarch64.dmg          macOS Apple Silicon installer
-TaxMTD_<v>_aarch64.dmg.sig      Ed25519 signature for the updater
-TaxMTD_<v>_x64.dmg              macOS Intel installer
-TaxMTD_<v>_x64.dmg.sig          Ed25519 signature for the updater
-TaxMTD_<v>_x64_en-GB.msi        Windows MSI (en-GB)
-TaxMTD_<v>_x64_en-GB.msi.sig    Ed25519 signature for the updater
-TaxMTD_<v>_x64-setup.exe        Windows NSIS installer
-TaxMTD_<v>_x64-setup.exe.sig    Ed25519 signature for the updater
-latest.json                     Tauri auto-updater manifest
-```
-
-The `.sig` files are public Ed25519 minisign signatures. Installed apps verify them against a public key baked in at build time before applying any update — a tampered binary is refused before it touches disk.
-
----
-
-## Auto-update flow
-
-Once installed, **TaxMTD updates itself**. On every launch the app asks our update endpoint whether a newer version is available. If yes, the app shows the release's changelog inline and offers **Install & restart** — one click and you're on the new version.
-
-```
-   App boots
-       │
-       ▼
-   GET https://taxmtd.uk/api/desktop/update
-       ?target=darwin|windows
-       &arch=aarch64|x86_64
-       &current_version=<running>
-       │
-       ▼
-   ─ If a newer version exists:
-       200 { version, notes, pub_date, url, signature }
-       App shows the changelog, downloads the bundle,
-       verifies the signature, swaps the binary, restarts.
-   ─ Otherwise:
-       204 No Content — no dialog, no interruption.
-```
-
-No GitHub login required. No CDN credentials in the app. Everything is HTTPS + minisign.
-
----
-
-## Security & signing
-
-- 🍎 **macOS** binaries are signed with **Apple Developer ID** (Team `6S87K97Y8M`, Cliqer Ltd) and **notarised** by Apple. Gatekeeper opens them with no warnings.
-- 🪟 **Windows** binaries are signed with **Azure Code Signing** (publisher: Cliqer Ltd). SmartScreen will trust them as the cert's reputation builds. If you see "Unknown publisher" on a fresh install, that's a transient SmartScreen heuristic — the cert is valid; click **More info → Run anyway**.
-- 🔄 **Update payloads** are verified with **Ed25519 minisign** against a public key baked into every installed app. The key cannot be replaced post-install.
+All installers and updates are **cryptographically signed**. Any tampered payload is refused before it touches your machine.
 
 ---
 
 ## What's inside the app
 
-This is the **same TaxMTD app** you use in the browser — just running natively. Same data, same account, same features. One log-in, every device.
+This is the **same TaxMTD app** you use in the browser, running natively. Same data, same account, same features. One log-in, every device.
 
 - **Making Tax Digital** for Income Tax, VAT, and Corporation Tax
 - **Self Assessment** auto-fill for SA100 / SA102 / SA103 / SA105 / SA106 / SA108
 - **Universal Credit** calculator with monthly assessment-period support
-- **Bank feeds** via Open Banking (Plaid), Wise, Revolut, Stripe, PayPal, and Amazon Seller
+- **Bank feeds** via Open Banking, Wise, Revolut, Stripe, PayPal, and Amazon Seller
 - **AI bookkeeping** — categorisation, receipt OCR, mileage tracking
 - **Invoicing** — designer, recurring templates, credit notes, estimates
 - **Reports** — P&L, balance sheet, cash flow, fixed assets, project profitability, custom builder
-- **Companies House** integration — annual accounts + CT600 + iXBRL export
+- **Companies House** integration — annual accounts + iXBRL export
 
 See [taxmtd.uk](https://taxmtd.uk) for the full feature list and [taxmtd.uk/docs](https://taxmtd.uk/docs) for guides.
 
 ---
 
-## Source code
+## Security & trust
 
-This repo only hosts **signed binaries**. The Tauri shell source lives in [`TaxMTD/UC-tauri`](https://github.com/TaxMTD/UC-tauri) (private). The web app is at [taxmtd.uk](https://taxmtd.uk).
+- **macOS** binaries are signed and notarised by Apple. Gatekeeper opens them with no warnings.
+- **Windows** binaries are code-signed under publisher **Cliqer Ltd**. SmartScreen will trust them as the cert's reputation builds. If you see "Unknown publisher" on a fresh install, that's a transient SmartScreen heuristic — the cert is valid; click **More info → Run anyway**.
+- **Update payloads** are signature-verified against a public key embedded in every installed app. The key cannot be replaced post-install, so a future build can never push a payload that bypasses verification.
+
+---
+
+## Help & contact
+
+- **App not opening?** See [taxmtd.uk/docs/apps/troubleshooting](https://taxmtd.uk/docs).
+- **Question or feedback?** [taxmtd.uk/contact](https://taxmtd.uk/contact).
+- **Web app:** [taxmtd.uk](https://taxmtd.uk) — every feature works in the browser too, on every device.
 
 ---
 
@@ -135,6 +98,6 @@ This repo only hosts **signed binaries**. The Tauri shell source lives in [`TaxM
 
 Built by [Cliqer Ltd](https://taxmtd.uk) in the UK.
 
-<sub>Apple Developer ID • Azure Code Signing • HMRC-recognised MTD software</sub>
+<sub>HMRC-recognised Making Tax Digital software · Apple-notarised · Windows code-signed</sub>
 
 </div>
